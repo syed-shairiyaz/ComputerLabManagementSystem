@@ -1,0 +1,128 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">💻 Computer Lab Management Dashboard</h2>
+
+<div class="row">
+
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body text-center">
+                <h5>Total Students</h5>
+                <h2>{{ total_students }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center">
+                <h5>Total Teachers</h5>
+                <h2>{{ total_teachers }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning shadow">
+            <div class="card-body text-center">
+                <h5>Today's Attendance</h5>
+                <h2>{{ today_attendance }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body text-center">
+                <h5>Working PCs</h5>
+                <h2>{{ working_systems }}</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row mt-3">
+
+    <div class="col-md-6">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-danger text-white">
+
+                Non-Working Systems
+
+            </div>
+
+            <div class="card-body text-center">
+
+                <h1>{{ non_working_systems }}</h1>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-secondary text-white">
+
+                Recent Attendance
+
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-sm">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Language</th>
+                            <th>Time</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for a in recent_attendance %}
+
+                        <tr>
+
+                            <td>{{ a.student_id }}</td>
+
+                            <td>{{ a.student_name }}</td>
+
+                            <td>{{ a.language }}</td>
+
+                            <td>{{ a.time_in.strftime("%I:%M %p") }}</td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

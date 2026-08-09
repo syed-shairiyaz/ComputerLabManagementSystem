@@ -1,0 +1,150 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Student Attendance{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-7">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-success text-white">
+
+                <h3 class="mb-0">
+                    Student Attendance
+                </h3>
+
+            </div>
+
+            <div class="card-body">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category,message in messages %}
+
+                        <div class="alert alert-{{category}}">
+                            {{message}}
+                        </div>
+
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Student
+                        </label>
+
+                        <input
+                            class="form-control"
+                            value="{{ student.student_id }} - {{ student.name }}"
+                            readonly>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Teacher
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="teacher"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Category
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="category"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Language
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="language"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Topic
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="topic"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Computer System
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="system_number"
+                            placeholder="Example: PC-01"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Remarks
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            rows="3"
+                            name="remarks"></textarea>
+
+                    </div>
+
+                    <button class="btn btn-success w-100">
+
+                        Submit Attendance
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

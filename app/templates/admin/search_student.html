@@ -1,0 +1,127 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Search Student{% endblock %}
+
+{% block content %}
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+<h3>Search Student</h3>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="input-group">
+
+<input
+type="text"
+name="keyword"
+class="form-control"
+placeholder="Enter Student ID or Name">
+
+<button class="btn btn-success">
+
+Search
+
+</button>
+
+</div>
+
+</form>
+
+<hr>
+
+{% if student %}
+
+<h4>{{ student.name }}</h4>
+
+<p>
+
+<strong>ID :</strong>
+
+{{ student.student_id }}
+
+</p>
+
+<p>
+
+<strong>Year :</strong>
+
+{{ student.year }}
+
+</p>
+
+<p>
+
+<strong>Branch :</strong>
+
+{{ student.branch }}
+
+</p>
+
+<p>
+
+<strong>Section :</strong>
+
+{{ student.section }}
+
+</p>
+
+<hr>
+
+<h5>
+
+Total Attendance :
+
+{{ records|length }}
+
+</h5>
+
+<table class="table table-bordered">
+
+<tr>
+
+<th>Date</th>
+
+<th>Teacher</th>
+
+<th>Language</th>
+
+<th>Topic</th>
+
+<th>System</th>
+
+</tr>
+
+{% for r in records %}
+
+<tr>
+
+<td>{{ r.date }}</td>
+
+<td>{{ r.teacher }}</td>
+
+<td>{{ r.language }}</td>
+
+<td>{{ r.topic }}</td>
+
+<td>{{ r.system_number }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}

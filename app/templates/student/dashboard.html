@@ -1,0 +1,31 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-body text-center">
+
+            <h2>Welcome {{ name }}</h2>
+
+            <hr>
+
+            <h4>Computer Lab Management System</h4>
+
+            <p>You have successfully logged in.</p>
+
+            <a href="/student/attendance" class="btn btn-primary">
+                Mark Attendance
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Computer Systems{% endblock %}
+
+{% block content %}
+
+<div class="card shadow">
+
+    <div class="card-header bg-primary text-white d-flex justify-content-between">
+
+        <h3>Computer Systems</h3>
+
+        <a href="/admin/computers/add" class="btn btn-light">
+            + Add Computer
+        </a>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered table-hover">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>System</th>
+                    <th>Status</th>
+                    <th>Issue</th>
+                    <th>Remarks</th>
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for computer in computers %}
+
+                <tr>
+
+                    <td>{{ computer.system_number }}</td>
+
+                    <td>
+
+                        {% if computer.status == "Working" %}
+                            <span class="badge bg-success">Working</span>
+                        {% else %}
+                            <span class="badge bg-danger">Not Working</span>
+                        {% endif %}
+
+                    </td>
+
+                    <td>{{ computer.issue or "-" }}</td>
+
+                    <td>{{ computer.remarks or "-" }}</td>
+
+                    <td>
+
+                        <a href="/admin/computers/edit/{{ computer.id }}" class="btn btn-warning btn-sm">
+
+                            Edit
+
+                        </a>
+
+                        <a href="/admin/computers/delete/{{ computer.id }}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Delete this computer?')">
+
+                            Delete
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

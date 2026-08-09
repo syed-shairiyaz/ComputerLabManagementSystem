@@ -1,0 +1,81 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Attendance Records{% endblock %}
+
+{% block content %}
+
+<div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+
+        <h3>Attendance Records</h3>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered table-hover">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Name</th>
+
+                    <th>Teacher</th>
+
+                    <th>Category</th>
+
+                    <th>Language</th>
+
+                    <th>Topic</th>
+
+                    <th>System</th>
+
+                    <th>Date</th>
+
+                    <th>Time</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for record in records %}
+
+                <tr>
+
+                    <td>{{ record.student_id }}</td>
+
+                    <td>{{ record.student_name }}</td>
+
+                    <td>{{ record.teacher }}</td>
+
+                    <td>{{ record.category }}</td>
+
+                    <td>{{ record.language }}</td>
+
+                    <td>{{ record.topic }}</td>
+
+                    <td>{{ record.system_number }}</td>
+
+                    <td>{{ record.date }}</td>
+
+                    <td>{{ record.time_in.strftime("%I:%M %p") }}</td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

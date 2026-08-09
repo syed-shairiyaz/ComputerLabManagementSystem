@@ -1,0 +1,135 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Edit Student{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+<div class="card shadow">
+
+<div class="card-header bg-warning">
+
+<h3>Edit Student</h3>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="mb-3">
+
+<label>Student ID</label>
+
+<input
+type="text"
+class="form-control"
+value="{{ student.student_id }}"
+readonly>
+
+</div>
+
+<div class="mb-3">
+
+<label>Name</label>
+
+<input
+type="text"
+name="name"
+value="{{ student.name }}"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Password</label>
+
+<input
+type="text"
+name="password"
+value="{{ student.password }}"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Year</label>
+
+<input
+type="text"
+name="year"
+value="{{ student.year }}"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Branch</label>
+
+<input
+type="text"
+name="branch"
+value="{{ student.branch }}"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Section</label>
+
+<input
+type="text"
+name="section"
+value="{{ student.section }}"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Status</label>
+
+<select
+name="status"
+class="form-select">
+
+<option {% if student.status=="Active" %}selected{% endif %}>
+Active
+</option>
+
+<option {% if student.status=="Inactive" %}selected{% endif %}>
+Inactive
+</option>
+
+</select>
+
+</div>
+
+<button class="btn btn-warning">
+
+Update Student
+
+</button>
+
+<a
+href="/admin/students"
+class="btn btn-secondary">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

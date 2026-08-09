@@ -1,0 +1,82 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Edit Teacher{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+<div class="card shadow">
+
+<div class="card-header bg-warning">
+
+<h3>Edit Teacher</h3>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="mb-3">
+
+<label>Name</label>
+
+<input
+type="text"
+name="name"
+value="{{ teacher.name }}"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Department</label>
+
+<input
+type="text"
+name="department"
+value="{{ teacher.department }}"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Status</label>
+
+<select
+name="status"
+class="form-select">
+
+<option {% if teacher.status=="Active" %}selected{% endif %}>Active</option>
+
+<option {% if teacher.status=="Inactive" %}selected{% endif %}>Inactive</option>
+
+</select>
+
+</div>
+
+<button class="btn btn-warning">
+
+Update Teacher
+
+</button>
+
+<a href="/admin/teachers"
+class="btn btn-secondary">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

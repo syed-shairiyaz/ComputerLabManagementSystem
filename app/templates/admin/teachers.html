@@ -1,0 +1,95 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Teacher Management{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+<div class="d-flex justify-content-between mb-3">
+
+<h2>Teacher Management</h2>
+
+<a href="/admin/teachers/add"
+class="btn btn-success">
+
++ Add Teacher
+
+</a>
+
+</div>
+
+<table class="table table-bordered table-hover">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>Name</th>
+
+<th>Department</th>
+
+<th>Status</th>
+
+<th width="180">Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for teacher in teachers %}
+
+<tr>
+
+<td>{{ teacher.name }}</td>
+
+<td>{{ teacher.department }}</td>
+
+<td>{{ teacher.status }}</td>
+
+<td>
+
+<a
+href="/admin/teachers/edit/{{ teacher.id }}"
+class="btn btn-warning btn-sm">
+
+Edit
+
+</a>
+
+<a
+href="/admin/teachers/delete/{{ teacher.id }}"
+class="btn btn-danger btn-sm"
+onclick="return confirm('Delete this teacher?')">
+
+Delete
+
+</a>
+
+</td>
+
+</tr>
+
+{% else %}
+
+<tr>
+
+<td colspan="4" class="text-center">
+
+No Teachers Found
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

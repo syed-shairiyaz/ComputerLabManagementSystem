@@ -1,0 +1,86 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Edit Computer{% endblock %}
+
+{% block content %}
+
+<div class="card shadow">
+
+<div class="card-header bg-warning">
+
+<h3>Edit Computer</h3>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="mb-3">
+
+<label>System Number</label>
+
+<input
+type="text"
+name="system_number"
+class="form-control"
+value="{{ computer.system_number }}"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label>Status</label>
+
+<select
+name="status"
+class="form-select">
+
+<option {% if computer.status=="Working" %}selected{% endif %}>
+Working
+</option>
+
+<option {% if computer.status=="Not Working" %}selected{% endif %}>
+Not Working
+</option>
+
+</select>
+
+</div>
+
+<div class="mb-3">
+
+<label>Issue</label>
+
+<input
+type="text"
+name="issue"
+class="form-control"
+value="{{ computer.issue }}">
+
+</div>
+
+<div class="mb-3">
+
+<label>Remarks</label>
+
+<textarea
+name="remarks"
+class="form-control">{{ computer.remarks }}</textarea>
+
+</div>
+
+<button class="btn btn-warning">
+
+Update Computer
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

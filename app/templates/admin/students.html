@@ -1,0 +1,107 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Student Management{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+<div class="d-flex justify-content-between mb-3">
+
+<h2>Student Management</h2>
+
+<a href="/admin/students/add"
+class="btn btn-success">
+
++ Add Student
+
+</a>
+
+</div>
+
+<table class="table table-bordered table-hover">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>ID</th>
+
+<th>Name</th>
+
+<th>Year</th>
+
+<th>Branch</th>
+
+<th>Section</th>
+
+<th>Status</th>
+
+<th width="180">Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for student in students %}
+
+<tr>
+
+<td>{{ student.student_id }}</td>
+
+<td>{{ student.name }}</td>
+
+<td>{{ student.year }}</td>
+
+<td>{{ student.branch }}</td>
+
+<td>{{ student.section }}</td>
+
+<td>{{ student.status }}</td>
+
+<td>
+
+<a
+href="/admin/students/edit/{{ student.id }}"
+class="btn btn-warning btn-sm">
+
+Edit
+
+</a>
+
+<a
+href="/admin/students/delete/{{ student.id }}"
+class="btn btn-danger btn-sm"
+onclick="return confirm('Delete this student?')">
+
+Delete
+
+</a>
+
+</td>
+
+</tr>
+
+{% else %}
+
+<tr>
+
+<td colspan="7" class="text-center">
+
+No Students Found
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}
