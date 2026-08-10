@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from datetime import date
 
+from app import db
 from app.models import Student, Teacher, Attendance, ComputerSystem, Admin
 
 
