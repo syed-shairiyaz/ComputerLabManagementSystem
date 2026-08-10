@@ -4,35 +4,44 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
+<div class="container mt-4">
 
-    <div class="col-lg-7">
+    <div class="row justify-content-center">
 
-        <div class="card shadow">
+        <div class="col-lg-7">
 
-            <div class="card-header bg-success text-white">
+            <div class="card shadow">
 
-                <h3 class="mb-0">
-                    Student Attendance
-                </h3>
+                <div class="card-header bg-success text-white">
 
-            </div>
+                    <h3 class="mb-0">
+                        Student Attendance
+                    </h3>
 
-            <div class="card-body">
+                </div>
 
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category,message in messages %}
+                <div class="card-body">
 
-                        <div class="alert alert-{{category}}">
-                            {{message}}
-                        </div>
+                    <!-- Flash Messages -->
 
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
 
-                <form method="POST">
+                        {% if messages %}
+
+                            {% for category, message in messages %}
+
+                                <div class="alert alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+
+                            {% endfor %}
+
+                        {% endif %}
+
+                    {% endwith %}
+
+
+                    <!-- Student -->
 
                     <div class="mb-3">
 
@@ -47,97 +56,92 @@
 
                     </div>
 
+
+                    <!-- Branch -->
+
                     <div class="mb-3">
 
                         <label class="form-label">
-                            Teacher
+                            Branch
                         </label>
 
                         <input
-                            type="text"
                             class="form-control"
-                            name="teacher"
-                            required>
+                            value="{{ student.branch }}"
+                            readonly>
 
                     </div>
 
-                    <div class="mb-3">
 
-                        <label class="form-label">
-                            Category
-                        </label>
+                    <form method="POST">
 
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="category"
-                            required>
 
-                    </div>
+                        <!-- Topic -->
 
-                    <div class="mb-3">
+                        <div class="mb-3">
 
-                        <label class="form-label">
-                            Language
-                        </label>
+                            <label class="form-label">
+                                Topic
+                            </label>
 
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="language"
-                            required>
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="topic"
+                                placeholder="Enter today's topic"
+                                required>
 
-                    </div>
+                        </div>
 
-                    <div class="mb-3">
 
-                        <label class="form-label">
-                            Topic
-                        </label>
+                        <!-- Computer System -->
 
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="topic"
-                            required>
+                        <div class="mb-3">
 
-                    </div>
+                            <label class="form-label">
+                                Computer System
+                            </label>
 
-                    <div class="mb-3">
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="system_number"
+                                placeholder="Example: PC-01"
+                                required>
 
-                        <label class="form-label">
-                            Computer System
-                        </label>
+                        </div>
 
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="system_number"
-                            placeholder="Example: PC-01"
-                            required>
 
-                    </div>
+                        <!-- Remarks -->
 
-                    <div class="mb-3">
+                        <div class="mb-3">
 
-                        <label class="form-label">
-                            Remarks
-                        </label>
+                            <label class="form-label">
+                                Remarks
+                            </label>
 
-                        <textarea
-                            class="form-control"
-                            rows="3"
-                            name="remarks"></textarea>
+                            <textarea
+                                class="form-control"
+                                rows="3"
+                                name="remarks"
+                                placeholder="Enter remarks"></textarea>
 
-                    </div>
+                        </div>
 
-                    <button class="btn btn-success w-100">
 
-                        Submit Attendance
+                        <!-- Submit -->
 
-                    </button>
+                        <button
+                            type="submit"
+                            class="btn btn-success w-100">
 
-                </form>
+                            ✅ Submit Attendance
+
+                        </button>
+
+                    </form>
+
+                </div>
 
             </div>
 
