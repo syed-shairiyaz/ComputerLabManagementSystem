@@ -1,0 +1,98 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Search Student{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0">🔍 Search Student</h3>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Student ID or Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="keyword"
+                        class="form-control"
+                        placeholder="Enter Student ID or Name"
+                        required>
+
+                </div>
+
+                <button class="btn btn-success w-100">
+                    🔍 Search
+                </button>
+
+            </form>
+
+
+            {% if student %}
+
+            <hr>
+
+            <h4>Student Details</h4>
+
+            <div class="card bg-light mb-4">
+
+                <div class="card-body">
+
+                    <p>
+                        <strong>Student ID:</strong>
+                        {{ student.student_id }}
+                    </p>
+
+                    <p>
+                        <strong>Name:</strong>
+                        {{ student.name }}
+                    </p>
+
+                    <p>
+                        <strong>Year:</strong>
+                        {{ student.year }}
+                    </p>
+
+                    <p>
+                        <strong>Branch:</strong>
+                        {{ student.branch }}
+                    </p>
+
+                    <p>
+                        <strong>Section:</strong>
+                        {{ student.section }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            {% else %}
+
+                {% if request.method == "POST" %}
+
+                <div class="alert alert-warning mt-3">
+                    Student not found.
+                </div>
+
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
