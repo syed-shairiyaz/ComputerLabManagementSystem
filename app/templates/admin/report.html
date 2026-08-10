@@ -4,132 +4,317 @@
 
 {% block content %}
 
-<h2 class="mb-4">Attendance Report</h2>
+<h2 class="mb-4">📊 Attendance Report</h2>
+
+<!-- ================= SEARCH FORM ================= -->
 
 <div class="card shadow p-4">
 
-    <!-- Search Form -->
-    <form method="POST">
+<form method="POST">
 
-        <div class="row">
+    <div class="row g-3">
 
-            <div class="col-md-4">
+        <!-- Student ID -->
 
-                <label class="form-label">Student ID</label>
+        <div class="col-md-3">
 
-                <input
-                    type="text"
-                    name="student_id"
-                    class="form-control"
-                    value="{{ request.form.get('student_id','') }}"
-                    required>
+            <label class="form-label">
+                Student ID
+            </label>
 
-            </div>
+            <input
+                type="text"
+                name="student_id"
+                class="form-control"
+                placeholder="Optional"
+                value="{{ student_id or '' }}">
 
-            <div class="col-md-4">
-
-                <label class="form-label">Report Type</label>
-
-                <select
-                    name="report_type"
-                    class="form-select">
-
-                    <option value="daily"
-                        {% if request.form.get('report_type')=="daily" %}selected{% endif %}>
-                        Daily
-                    </option>
-
-                    <option value="weekly"
-                        {% if request.form.get('report_type')=="weekly" %}selected{% endif %}>
-                        Weekly
-                    </option>
-
-                    <option value="monthly"
-                        {% if request.form.get('report_type')=="monthly" %}selected{% endif %}>
-                        Monthly
-                    </option>
-
-                </select>
-
-            </div>
-
-            <div class="col-md-4 d-flex align-items-end">
-
-                <button class="btn btn-primary w-100">
-
-                    🔍 Search
-
-                </button>
-
-            </div>
+            <small class="text-muted">
+                Leave empty for group report
+            </small>
 
         </div>
 
-    </form>
 
-    <hr>
+        <!-- Report Type -->
 
-    <!-- Export Excel Form -->
-    <form action="{{ url_for('attendance.export_report') }}" method="POST">
+        <div class="col-md-3">
 
-        <input
-            type="hidden"
-            name="student_id"
-            value="{{ request.form.get('student_id','') }}">
+            <label class="form-label">
+                Report Type
+            </label>
 
-        <input
-            type="hidden"
-            name="report_type"
-            value="{{ request.form.get('report_type','daily') }}">
+            <select
+                name="report_type"
+                class="form-select">
 
-        <button class="btn btn-success">
+                <option value="daily"
+                    {% if selected_report_type == "daily" %}
+                    selected
+                    {% endif %}>
+                    Daily
+                </option>
 
-            📥 Export Excel
+                <option value="weekly"
+                    {% if selected_report_type == "weekly" %}
+                    selected
+                    {% endif %}>
+                    Weekly
+                </option>
 
-        </button>
+                <option value="monthly"
+                    {% if selected_report_type == "monthly" %}
+                    selected
+                    {% endif %}>
+                    Monthly
+                </option>
 
-    </form>
+            </select>
+
+        </div>
+
+
+        <!-- GROUP -->
+
+        <div class="col-md-3">
+
+            <label class="form-label">
+                Group / Branch
+            </label>
+
+            <select
+                name="group"
+                class="form-select">
+
+                <option value="">
+                    All Groups
+                </option>
+
+                <option value="CSE"
+                    {% if selected_group == "CSE" %}
+                    selected
+                    {% endif %}>
+                    CSE
+                </option>
+
+                <option value="CSE-DS"
+                    {% if selected_group == "CSE-DS" %}
+                    selected
+                    {% endif %}>
+                    CSE-DS
+                </option>
+
+                <option value="CSE-CS"
+                    {% if selected_group == "CSE-CS" %}
+                    selected
+                    {% endif %}>
+                    CSE-CS
+                </option>
+
+                <option value="ALML"
+                    {% if selected_group == "ALML" %}
+                    selected
+                    {% endif %}>
+                    ALML
+                </option>
+
+                <option value="ECE"
+                    {% if selected_group == "ECE" %}
+                    selected
+                    {% endif %}>
+                    ECE
+                </option>
+
+                <option value="EEE"
+                    {% if selected_group == "EEE" %}
+                    selected
+                    {% endif %}>
+                    EEE
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- SEARCH BUTTON -->
+
+        <div class="col-md-3 d-flex align-items-end">
+
+            <button
+                type="submit"
+                class="btn btn-primary w-100">
+
+                🔍 View Attendance
+
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
 
 </div>
 
+
 <br>
 
-<table class="table table-bordered table-striped">
 
-    <thead>
+<!-- ================= EXPORT ================= -->
 
-        <tr>
+<form
+    action="{{ url_for('attendance.export_report') }}"
+    method="POST"
+    class="mb-4">
 
-            <th>Date</th>
-            <th>Student ID</th>
-            <th>Name</th>
-            <th>Teacher</th>
-            <th>Language</th>
-            <th>System</th>
+    <input
+        type="hidden"
+        name="student_id"
+        value="{{ student_id or '' }}">
 
-        </tr>
 
-    </thead>
+    <input
+        type="hidden"
+        name="report_type"
+        value="{{ selected_report_type }}">
 
-    <tbody>
 
-    {% for r in records %}
+    <input
+        type="hidden"
+        name="group"
+        value="{{ selected_group or '' }}">
 
-        <tr>
 
-            <td>{{ r.date }}</td>
-            <td>{{ r.student_id }}</td>
-            <td>{{ r.student_name }}</td>
-            <td>{{ r.teacher }}</td>
-            <td>{{ r.language }}</td>
-            <td>{{ r.system_number }}</td>
+    <button
+        type="submit"
+        class="btn btn-success">
 
-        </tr>
+        📥 Export Excel
 
-    {% endfor %}
+    </button>
 
-    </tbody>
+</form>
 
-</table>
+
+<!-- ================= REPORT TABLE ================= -->
+
+<div class="card shadow">
+
+    <div class="card-header bg-secondary text-white">
+
+        <strong>
+            Attendance Records
+        </strong>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-striped">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Date</th>
+
+                        <th>Student ID</th>
+
+                        <th>Name</th>
+
+                        <th>Group</th>
+
+                        <th>Teacher</th>
+
+                        <th>Language</th>
+
+                        <th>Topic</th>
+
+                        <th>System</th>
+
+                        <th>Time</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% if records %}
+
+                    {% for r in records %}
+
+                    <tr>
+
+                        <td>
+                            {{ r.date }}
+                        </td>
+
+                        <td>
+                            {{ r.student_id }}
+                        </td>
+
+                        <td>
+                            {{ r.student_name }}
+                        </td>
+
+                        <td>
+                            {{ r.branch }}
+                        </td>
+
+                        <td>
+                            {{ r.teacher }}
+                        </td>
+
+                        <td>
+                            {{ r.language }}
+                        </td>
+
+                        <td>
+                            {{ r.topic }}
+                        </td>
+
+                        <td>
+                            {{ r.system_number }}
+                        </td>
+
+                        <td>
+                            {{ r.time_in.strftime("%I:%M %p") if r.time_in else "" }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="9"
+                            class="text-center text-muted">
+
+                            No attendance records found.
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}
