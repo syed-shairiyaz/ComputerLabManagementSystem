@@ -1,52 +1,80 @@
 {% extends "layout/base.html" %}
 
 {% block title %}
-Home
+CLMS - Home
 {% endblock %}
 
 {% block content %}
 
 <div class="row justify-content-center">
 
-<div class="col-md-8">
+    <div class="col-md-7 col-lg-6">
 
-<div class="card shadow">
+        <div class="card shadow-lg">
 
-<div class="card-body text-center">
+            <div class="card-body text-center p-5">
 
-<h1 class="mb-3">
+                <!-- Logo / Title -->
 
-Computer Lab Management System
+                <h1 class="mb-3">
+                    💻 CLMS
+                </h1>
 
-</h1>
+                <h4 class="mb-3">
+                    Computer Lab Management System
+                </h4>
 
-<p>
+                <p class="text-muted">
+                    Student Attendance & Lab Management
+                </p>
 
-Welcome to CLMS
+                <hr class="my-4">
 
-</p>
 
-<hr>
+                <!-- STUDENT LOGIN -->
 
-<a href="/student/login"
-class="btn btn-success btn-lg m-2">
+                <a
+                    href="{{ url_for('main.student_login') }}"
+                    class="btn btn-success btn-lg w-100 mb-3">
 
-Student Login
+                    🎓 Student Login
 
-</a>
+                </a>
 
-<a href="/admin/login"
-class="btn btn-primary btn-lg m-2">
 
-Admin Login
+                <!-- SEARCH STUDENT -->
 
-</a>
+                <a
+                    href="{{ url_for('student.search_student') }}"
+                    class="btn btn-outline-primary btn-lg w-100 mb-4">
 
-</div>
+                    🔍 Search Student
 
-</div>
+                </a>
 
-</div>
+
+                <hr>
+
+
+                <!-- ADMIN -->
+
+                <p class="text-muted small mb-2">
+                    Administration
+                </p>
+
+                <a
+                    href="{{ url_for('main.admin_login') }}"
+                    class="btn btn-dark">
+
+                    🔐 Admin
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
