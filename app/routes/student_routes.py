@@ -8,128 +8,80 @@ student_bp = Blueprint("student", __name__)
 
 
 # =========================================================
-# STUDENT MANAGEMENT
+# ADMIN - STUDENT MANAGEMENT
 # =========================================================
 
 @student_bp.route("/admin/students")
 def students():
 
-    # Admin login protection
     if "admin_id" not in session:
         return redirect(url_for("main.admin_login"))
-
-    # -----------------------------------------
-    # GET FILTER VALUES
-    # -----------------------------------------
 
     selected_year = request.args.get("year", "").strip()
     selected_branch = request.args.get("branch", "").strip()
     search = request.args.get("search", "").strip()
 
-
-    # -----------------------------------------
-    # START QUERY
-    # -----------------------------------------
-
     query = Student.query
 
-
-    # -----------------------------------------
-    # YEAR FILTER
-    # -----------------------------------------
-
+    # Year filter
     if selected_year:
-
         query = query.filter(
             Student.year == selected_year
         )
 
-
-    # -----------------------------------------
-    # BRANCH FILTER
-    # -----------------------------------------
-
+    # Branch filter
     if selected_branch:
-
         query = query.filter(
             Student.branch == selected_branch
         )
 
-
-    # -----------------------------------------
-    # SEARCH STUDENT ID / NAME
-    # -----------------------------------------
-
+    # Search ID / Name
     if search:
-
         query = query.filter(
             (Student.student_id.ilike(f"%{search}%")) |
             (Student.name.ilike(f"%{search}%"))
         )
 
-
-    # -----------------------------------------
-    # GET STUDENTS
-    # -----------------------------------------
-
     students = query.order_by(
         Student.student_id
     ).all()
 
-
-    # -----------------------------------------
-    # SEND DATA TO TEMPLATE
-    # -----------------------------------------
-
     return render_template(
         "admin/students.html",
-
         students=students,
-
         selected_year=selected_year,
-
         selected_branch=selected_branch,
-
         search=search
     )
 
 
 # =========================================================
-# ADD STUDENT
+# ADMIN - ADD STUDENT
 # =========================================================
 
-@student_bp.route("/admin/students/add", methods=["GET", "POST"])
+@student_bp.route(
+    "/admin/students/add",
+    methods=["GET", "POST"]
+)
 def add_student():
 
     if "admin_id" not in session:
         return redirect(url_for("main.admin_login"))
 
-
     if request.method == "POST":
 
         student_id = request.form["student_id"].strip()
-
         name = request.form["name"].strip()
-
         password = request.form["password"]
-
         year = request.form["year"]
-
         branch = request.form["branch"]
-
         section = request.form["section"]
-
         status = request.form["status"]
 
-
-        # -----------------------------------------
-        # CHECK DUPLICATE STUDENT ID
-        # -----------------------------------------
-
+        # Check duplicate Student ID
         existing_student = Student.query.filter_by(
             student_id=student_id
         ).first()
-
 
         if existing_student:
 
@@ -142,44 +94,27 @@ def add_student():
                 url_for("student.add_student")
             )
 
-
-        # -----------------------------------------
-        # CREATE STUDENT
-        # -----------------------------------------
-
         student = Student(
-
             student_id=student_id,
-
             name=name,
-
             password=password,
-
             year=year,
-
             branch=branch,
-
             section=section,
-
             status=status
         )
 
-
         db.session.add(student)
-
         db.session.commit()
-
 
         flash(
             "Student added successfully!",
             "success"
         )
 
-
         return redirect(
             url_for("student.students")
         )
-
 
     return render_template(
         "admin/add_student.html"
@@ -187,7 +122,7 @@ def add_student():
 
 
 # =========================================================
-# EDIT STUDENT
+# ADMIN - EDIT STUDENT
 # =========================================================
 
 @student_bp.route(
@@ -199,9 +134,7 @@ def edit_student(id):
     if "admin_id" not in session:
         return redirect(url_for("main.admin_login"))
 
-
     student = Student.query.get_or_404(id)
-
 
     if request.method == "POST":
 
@@ -217,30 +150,25 @@ def edit_student(id):
 
         student.status = request.form["status"]
 
-
         db.session.commit()
-
 
         flash(
             "Student updated successfully!",
             "success"
         )
 
-
         return redirect(
             url_for("student.students")
         )
 
-
     return render_template(
         "admin/edit_student.html",
-
         student=student
     )
 
 
 # =========================================================
-# DELETE STUDENT
+# ADMIN - DELETE STUDENT
 # =========================================================
 
 @student_bp.route(
@@ -251,20 +179,16 @@ def delete_student(id):
     if "admin_id" not in session:
         return redirect(url_for("main.admin_login"))
 
-
     student = Student.query.get_or_404(id)
-
 
     db.session.delete(student)
 
     db.session.commit()
 
-
     flash(
         "Student deleted successfully!",
         "success"
     )
-
 
     return redirect(
         url_for("student.students")
@@ -283,69 +207,101 @@ def student_dashboard():
             url_for("main.student_login")
         )
 
-
     return render_template(
         "student/dashboard.html",
-
         name=session["student_name"]
     )
 
 
 # =========================================================
-# ADMIN SEARCH STUDENT + ATTENDANCE
+# PUBLIC STUDENT SEARCH
+# =========================================================
+# Students / visitors can use this.
+# NO ADMIN LOGIN REQUIRED.
+#
+# Only basic student information is shown.
+# Attendance records remain private.
+# =========================================================
+
+@student_bp.route(
+    "/student/search",
+    methods=["GET", "POST"]
+)
+def search_student():
+
+    student = None
+
+    if request.method == "POST":
+
+        keyword = request.form.get(
+            "keyword",
+            ""
+        ).strip()
+
+        if keyword:
+
+            student = Student.query.filter(
+                (Student.student_id.ilike(
+                    f"%{keyword}%"
+                )) |
+                (Student.name.ilike(
+                    f"%{keyword}%"
+                ))
+            ).first()
+
+    return render_template(
+        "student/search_student.html",
+        student=student
+    )
+
+
+# =========================================================
+# ADMIN - SEARCH STUDENT + ATTENDANCE
+# =========================================================
+# This is different from the public search.
+#
+# Admin can see the student's attendance history.
 # =========================================================
 
 @student_bp.route(
     "/admin/student/search",
     methods=["GET", "POST"]
 )
-def search_student():
+def admin_search_student():
 
     if "admin_id" not in session:
         return redirect(
             url_for("main.admin_login")
         )
 
-
     student = None
 
     records = []
 
-
     if request.method == "POST":
 
-        keyword = request.form["keyword"].strip()
-
+        keyword = request.form.get(
+            "keyword",
+            ""
+        ).strip()
 
         student = Student.query.filter(
-
             (Student.student_id == keyword) |
-
             (Student.name.ilike(
                 f"%{keyword}%"
             ))
-
         ).first()
-
 
         if student:
 
             records = Attendance.query.filter_by(
-
                 student_id=student.student_id
-
             ).order_by(
-
                 Attendance.time_in.desc()
-
             ).all()
 
-
     return render_template(
-
         "admin/search_student.html",
-
         student=student,
-
         records=records
     )
