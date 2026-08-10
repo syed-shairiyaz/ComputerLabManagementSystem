@@ -231,6 +231,11 @@ def search_student():
 
     student = None
 
+    working_days = 0
+    present_days = 0
+    absent_days = 0
+    attendance_percentage = 0
+
     if request.method == "POST":
 
         keyword = request.form.get(
@@ -249,11 +254,42 @@ def search_student():
                 ))
             ).first()
 
+            # --------------------------------
+            # ATTENDANCE SUMMARY
+            # --------------------------------
+
+            if student:
+
+                # Currently we use the number
+                # of attendance dates as present days.
+                present_days = Attendance.query.filter_by(
+                    student_id=student.student_id
+                ).count()
+
+                # Temporary working-days calculation
+                working_days = present_days
+
+                absent_days = 0
+
+                if working_days > 0:
+
+                    attendance_percentage = (
+                        present_days / working_days
+                    ) * 100
+
     return render_template(
         "student/search_student.html",
-        student=student
-    )
 
+        student=student,
+
+        working_days=working_days,
+
+        present_days=present_days,
+
+        absent_days=absent_days,
+
+        attendance_percentage=attendance_percentage
+    )
 
 # =========================================================
 # ADMIN - SEARCH STUDENT + ATTENDANCE
