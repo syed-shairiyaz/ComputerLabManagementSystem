@@ -33,27 +33,41 @@ def student_attendance():
 
     student = Student.query.get(session["student_id"])
 
+    if not student:
+        session.clear()
+        return redirect(url_for("main.student_login"))
+
     if request.method == "POST":
 
         today = datetime.now().date()
 
-        print("Student ID:", student.student_id)
-        print("Today:", today)
+        # --------------------------------
+        # PREVENT MULTIPLE ATTENDANCE
+        # --------------------------------
 
         already_marked = Attendance.query.filter(
-        Attendance.student_id == student.student_id,
-        Attendance.date == today
+            Attendance.student_id == student.student_id,
+            Attendance.date == today
         ).first()
 
-        print("Already Marked:", already_marked)
-
         if already_marked:
-            flash("You have already marked attendance today.", "warning")
+
+            flash(
+                "You have already marked attendance today.",
+                "warning"
+            )
+
             session.clear()
+
             return redirect(url_for("main.home"))
+
+        # --------------------------------
+        # CREATE ATTENDANCE
+        # --------------------------------
 
         attendance = Attendance(
 
+            # Student details from database
             student_id=student.student_id,
             student_name=student.name,
 
@@ -61,18 +75,14 @@ def student_attendance():
             branch=student.branch,
             section=student.section,
 
-            teacher=request.form["teacher"],
-
-            category=request.form["category"],
-
-            language=request.form["language"],
-
+            # Topic / system / remarks from student form
             topic=request.form["topic"],
 
             system_number=request.form["system_number"],
 
             remarks=request.form["remarks"],
 
+            # Automatically generated
             date=today,
 
             time_in=datetime.now()
@@ -80,10 +90,15 @@ def student_attendance():
         )
 
         db.session.add(attendance)
+
         db.session.commit()
 
-        flash("Attendance Submitted Successfully!", "success")
+        flash(
+            "Attendance Submitted Successfully!",
+            "success"
+        )
 
+        # Logout student after attendance
         session.clear()
 
         return redirect(url_for("main.home"))
@@ -92,7 +107,6 @@ def student_attendance():
         "student/attendance.html",
         student=student
     )
-
 
 
 @attendance_bp.route("/admin/report", methods=["GET", "POST"])
