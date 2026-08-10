@@ -1,8 +1,15 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from datetime import date
+from datetime import date, datetime
 
 from app import db
-from app.models import Student, Teacher, Attendance, ComputerSystem, Admin
+from app.models import (
+    Student,
+    Teacher,
+    Attendance,
+    ComputerSystem,
+    Admin,
+    WorkingDay
+)
 
 
 main = Blueprint("main", __name__)
@@ -291,4 +298,77 @@ def change_admin_password():
 
     return render_template(
         "admin/change_password.html"
+    )
+
+
+# =========================================================
+# WORKING DAYS
+# =========================================================
+
+@main.route("/admin/working-days", methods=["GET", "POST"])
+def working_days():
+
+    # Admin only
+    if "admin_id" not in session:
+        return redirect(url_for("main.admin_login"))
+
+    # -----------------------------------------
+    # ADD WORKING DAY
+    # -----------------------------------------
+
+    if request.method == "POST":
+
+        date_string = request.form["date"]
+        remarks = request.form.get("remarks", "").strip()
+
+        selected_date = datetime.strptime(
+            date_string,
+            "%Y-%m-%d"
+        ).date()
+
+        # Check duplicate date
+        existing_day = WorkingDay.query.filter_by(
+            date=selected_date
+        ).first()
+
+        if existing_day:
+
+            flash(
+                "This date is already added.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("main.working_days")
+            )
+
+        working_day = WorkingDay(
+            date=selected_date,
+            status="Working",
+            remarks=remarks
+        )
+
+        db.session.add(working_day)
+        db.session.commit()
+
+        flash(
+            "Working day added successfully!",
+            "success"
+        )
+
+        return redirect(
+            url_for("main.working_days")
+        )
+
+    # -----------------------------------------
+    # SHOW WORKING DAYS
+    # -----------------------------------------
+
+    days = WorkingDay.query.order_by(
+        WorkingDay.date.desc()
+    ).all()
+
+    return render_template(
+        "admin/working_days.html",
+        days=days
     )

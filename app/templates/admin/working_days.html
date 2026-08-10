@@ -1,0 +1,178 @@
+{% extends "layout/base.html" %}
+
+{% block title %}
+Working Days
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3 class="mb-0">
+                Working Days
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <!-- Flash Messages -->
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+
+                {% if messages %}
+
+                    {% for category, message in messages %}
+
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- Add Working Day -->
+
+            <form method="POST">
+
+                <div class="row">
+
+                    <div class="col-md-5">
+
+                        <label class="form-label">
+                            Working Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="date"
+                            class="form-control"
+                            required>
+
+                    </div>
+
+
+                    <div class="col-md-5">
+
+                        <label class="form-label">
+                            Remarks
+                        </label>
+
+                        <input
+                            type="text"
+                            name="remarks"
+                            class="form-control"
+                            placeholder="Example: Regular Lab">
+
+                    </div>
+
+
+                    <div class="col-md-2 d-flex align-items-end">
+
+                        <button
+                            type="submit"
+                            class="btn btn-success w-100">
+
+                            + Add
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+
+            <hr>
+
+
+            <!-- Working Days List -->
+
+            <h5 class="mb-3">
+                Working Days List
+            </h5>
+
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Date</th>
+
+                        <th>Status</th>
+
+                        <th>Remarks</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for day in days %}
+
+                    <tr>
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+                        <td>
+                            {{ day.date }}
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-success">
+                                {{ day.status }}
+                            </span>
+
+                        </td>
+
+                        <td>
+                            {{ day.remarks or "-" }}
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            class="text-center">
+
+                            No working days added yet.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
