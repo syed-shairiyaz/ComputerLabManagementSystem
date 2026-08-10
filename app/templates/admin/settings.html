@@ -1,0 +1,177 @@
+{% extends "layout/base.html" %}
+
+{% block title %}
+Admin Settings
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-md-7">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-primary text-white">
+
+                <h3 class="mb-0">
+                    ⚙️ Admin Settings
+                </h3>
+
+            </div>
+
+            <div class="card-body">
+
+                <!-- Flash Messages -->
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+
+                    {% if messages %}
+
+                        {% for category, message in messages %}
+
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                {% endwith %}
+
+
+                <!-- Admin Account -->
+
+                <div class="mb-4">
+
+                    <h5>
+                        👤 Admin Account
+                    </h5>
+
+                    <p class="mb-0">
+
+                        Current Username:
+
+                        <strong>
+                            {{ admin.username }}
+                        </strong>
+
+                    </p>
+
+                </div>
+
+
+                <hr>
+
+
+                <!-- Update Admin Settings -->
+
+                <h5 class="mb-3">
+                    ⚙️ Update Admin Settings
+                </h5>
+
+
+                <form method="POST">
+
+
+                    <!-- NEW USERNAME -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Admin Username
+                        </label>
+
+                        <input
+                            type="text"
+                            name="new_username"
+                            class="form-control"
+                            value="{{ admin.username }}"
+                            placeholder="Enter new username"
+                            required>
+
+                    </div>
+
+
+                    <!-- CURRENT PASSWORD -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Current Password
+                        </label>
+
+                        <input
+                            type="password"
+                            name="current_password"
+                            class="form-control"
+                            placeholder="Enter current password"
+                            required>
+
+                    </div>
+
+
+                    <hr>
+
+
+                    <!-- NEW PASSWORD -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            New Password
+                        </label>
+
+                        <input
+                            type="password"
+                            name="new_password"
+                            class="form-control"
+                            placeholder="Leave empty to keep current password">
+
+                        <small class="text-muted">
+                            Leave this empty if you only want to change the username.
+                        </small>
+
+                    </div>
+
+
+                    <!-- CONFIRM PASSWORD -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Confirm New Password
+                        </label>
+
+                        <input
+                            type="password"
+                            name="confirm_password"
+                            class="form-control"
+                            placeholder="Confirm new password">
+
+                    </div>
+
+
+                    <!-- SUBMIT -->
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100">
+
+                        ⚙️ Update Admin Settings
+
+                    </button>
+
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from datetime import date, datetime
 
 from app import db
+
 from app.models import (
     Student,
     Teacher,
@@ -35,6 +36,7 @@ def home():
 def admin_dashboard():
 
     if "admin_id" not in session:
+
         return redirect(
             url_for("main.admin_login")
         )
@@ -106,12 +108,10 @@ def admin_login():
 
         password = request.form["password"]
 
-
         admin = Admin.query.filter_by(
             username=username,
             password=password
         ).first()
-
 
         if admin:
 
@@ -123,12 +123,10 @@ def admin_login():
                 url_for("main.admin_dashboard")
             )
 
-
         flash(
             "Invalid Username or Password",
             "danger"
         )
-
 
     return render_template(
         "auth/admin_login.html"
@@ -151,12 +149,10 @@ def student_login():
 
         password = request.form["password"]
 
-
         student = Student.query.filter_by(
             student_id=student_id,
             password=password
         ).first()
-
 
         if student:
 
@@ -168,12 +164,10 @@ def student_login():
                 url_for("student.student_dashboard")
             )
 
-
         flash(
             "Invalid Student ID or Password",
             "danger"
         )
-
 
     return render_template(
         "auth/student_login.html"
@@ -181,16 +175,19 @@ def student_login():
 
 
 # =========================================================
-# ADMIN CHANGE PASSWORD
+# ADMIN SETTINGS
 # =========================================================
 
 @main.route(
-    "/admin/change-password",
+    "/admin/settings",
     methods=["GET", "POST"]
 )
-def change_admin_password():
+def admin_settings():
 
-    # Admin must be logged in
+    # -----------------------------------------------------
+    # ADMIN LOGIN PROTECTION
+    # -----------------------------------------------------
+
     if "admin_id" not in session:
 
         return redirect(
@@ -198,7 +195,10 @@ def change_admin_password():
         )
 
 
-    # Get currently logged-in admin
+    # -----------------------------------------------------
+    # GET CURRENT ADMIN
+    # -----------------------------------------------------
+
     admin = Admin.query.get(
         session["admin_id"]
     )
@@ -213,11 +213,19 @@ def change_admin_password():
         )
 
 
+    # -----------------------------------------------------
+    # UPDATE ADMIN SETTINGS
+    # -----------------------------------------------------
+
     if request.method == "POST":
 
         current_password = request.form[
             "current_password"
         ]
+
+        new_username = request.form[
+            "new_username"
+        ].strip()
 
         new_password = request.form[
             "new_password"
@@ -228,9 +236,9 @@ def change_admin_password():
         ]
 
 
-        # -----------------------------------------
+        # =================================================
         # CHECK CURRENT PASSWORD
-        # -----------------------------------------
+        # =================================================
 
         if admin.password != current_password:
 
@@ -240,64 +248,121 @@ def change_admin_password():
             )
 
             return redirect(
-                url_for("main.change_admin_password")
+                url_for("main.admin_settings")
             )
 
 
-        # -----------------------------------------
-        # CHECK NEW PASSWORD
-        # -----------------------------------------
+        # =================================================
+        # CHECK USERNAME
+        # =================================================
 
-        if len(new_password) < 6:
+        if not new_username:
 
             flash(
-                "New password must contain at least 6 characters.",
-                "warning"
-            )
-
-            return redirect(
-                url_for("main.change_admin_password")
-            )
-
-
-        # -----------------------------------------
-        # CONFIRM PASSWORD
-        # -----------------------------------------
-
-        if new_password != confirm_password:
-
-            flash(
-                "New passwords do not match.",
+                "Username cannot be empty.",
                 "danger"
             )
 
             return redirect(
-                url_for("main.change_admin_password")
+                url_for("main.admin_settings")
             )
 
 
-        # -----------------------------------------
-        # UPDATE PASSWORD
-        # -----------------------------------------
+        # -------------------------------------------------
+        # CHECK DUPLICATE USERNAME
+        # -------------------------------------------------
 
-        admin.password = new_password
+        existing_admin = Admin.query.filter(
+            Admin.username == new_username,
+            Admin.id != admin.id
+        ).first()
+
+
+        if existing_admin:
+
+            flash(
+                "This username is already taken.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("main.admin_settings")
+            )
+
+
+        # =================================================
+        # CHECK PASSWORD
+        # =================================================
+
+        # Password is optional.
+        # If empty, keep the existing password.
+
+        if new_password:
+
+            if len(new_password) < 6:
+
+                flash(
+                    "New password must contain at least 6 characters.",
+                    "warning"
+                )
+
+                return redirect(
+                    url_for("main.admin_settings")
+                )
+
+
+            if new_password != confirm_password:
+
+                flash(
+                    "New passwords do not match.",
+                    "danger"
+                )
+
+                return redirect(
+                    url_for("main.admin_settings")
+                )
+
+
+            # Update password
+            admin.password = new_password
+
+
+        # =================================================
+        # UPDATE USERNAME
+        # =================================================
+
+        admin.username = new_username
+
+
+        # =================================================
+        # SAVE CHANGES
+        # =================================================
 
         db.session.commit()
 
 
+        # Update current session
+        session["admin_name"] = admin.username
+
+
         flash(
-            "Admin password changed successfully!",
+            "Admin settings updated successfully!",
             "success"
         )
 
 
         return redirect(
-            url_for("main.admin_dashboard")
+            url_for("main.admin_settings")
         )
 
 
+    # =====================================================
+    # DISPLAY SETTINGS PAGE
+    # =====================================================
+
     return render_template(
-        "admin/change_password.html"
+        "admin/settings.html",
+        admin=admin
     )
 
 
@@ -305,31 +370,49 @@ def change_admin_password():
 # WORKING DAYS
 # =========================================================
 
-@main.route("/admin/working-days", methods=["GET", "POST"])
+@main.route(
+    "/admin/working-days",
+    methods=["GET", "POST"]
+)
 def working_days():
 
     # Admin only
-    if "admin_id" not in session:
-        return redirect(url_for("main.admin_login"))
 
-    # -----------------------------------------
+    if "admin_id" not in session:
+
+        return redirect(
+            url_for("main.admin_login")
+        )
+
+
+    # -----------------------------------------------------
     # ADD WORKING DAY
-    # -----------------------------------------
+    # -----------------------------------------------------
 
     if request.method == "POST":
 
         date_string = request.form["date"]
-        remarks = request.form.get("remarks", "").strip()
+
+        remarks = request.form.get(
+            "remarks",
+            ""
+        ).strip()
+
 
         selected_date = datetime.strptime(
             date_string,
             "%Y-%m-%d"
         ).date()
 
-        # Check duplicate date
+
+        # -------------------------------------------------
+        # CHECK DUPLICATE DATE
+        # -------------------------------------------------
+
         existing_day = WorkingDay.query.filter_by(
             date=selected_date
         ).first()
+
 
         if existing_day:
 
@@ -342,31 +425,47 @@ def working_days():
                 url_for("main.working_days")
             )
 
+
+        # -------------------------------------------------
+        # CREATE WORKING DAY
+        # -------------------------------------------------
+
         working_day = WorkingDay(
+
             date=selected_date,
+
             status="Working",
+
             remarks=remarks
         )
 
-        db.session.add(working_day)
+
+        db.session.add(
+            working_day
+        )
+
         db.session.commit()
+
 
         flash(
             "Working day added successfully!",
             "success"
         )
 
+
         return redirect(
             url_for("main.working_days")
         )
 
-    # -----------------------------------------
+
+    # -----------------------------------------------------
     # SHOW WORKING DAYS
-    # -----------------------------------------
+    # -----------------------------------------------------
 
     days = WorkingDay.query.order_by(
         WorkingDay.date.desc()
     ).all()
+
 
     return render_template(
         "admin/working_days.html",
