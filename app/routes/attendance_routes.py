@@ -15,15 +15,80 @@ def attendance_list():
     if "admin_id" not in session:
         return redirect(url_for("main.admin_login"))
 
-    records = Attendance.query.order_by(
-        Attendance.time_in.desc()
-    ).all()
+    # Get selected date from URL
+    selected_date = request.args.get("date")
+
+    # Check if admin wants to see all attendance
+    show_all = request.args.get("all") == "true"
+
+    # --------------------------------
+    # SHOW ALL ATTENDANCE
+    # --------------------------------
+
+    if show_all:
+
+        records = Attendance.query.order_by(
+            Attendance.time_in.desc()
+        ).all()
+
+        display_date = "All Attendance"
+
+        date_value = ""
+
+    # --------------------------------
+    # SHOW SELECTED DATE
+    # --------------------------------
+
+    else:
+
+        if selected_date:
+
+            try:
+
+                selected_date = datetime.strptime(
+                    selected_date,
+                    "%Y-%m-%d"
+                ).date()
+
+            except ValueError:
+
+                selected_date = datetime.now().date()
+
+        else:
+
+            # Default = TODAY
+            selected_date = datetime.now().date()
+
+
+        records = Attendance.query.filter(
+            Attendance.date == selected_date
+        ).order_by(
+            Attendance.time_in.desc()
+        ).all()
+
+
+        display_date = selected_date.strftime(
+            "%d-%m-%Y"
+        )
+
+        date_value = selected_date.strftime(
+            "%Y-%m-%d"
+        )
+
 
     return render_template(
-        "admin/attendance.html",
-        records=records
-    )
 
+        "admin/attendance.html",
+
+        records=records,
+
+        display_date=display_date,
+
+        selected_date=date_value,
+
+        show_all=show_all
+
+    )
 
 @attendance_bp.route("/student/attendance", methods=["GET", "POST"])
 def student_attendance():
