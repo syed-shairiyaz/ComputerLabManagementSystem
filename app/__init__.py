@@ -9,9 +9,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config.from_object(Config)
-
-    # Secret Key for Sessions (Student/Admin Login)
-    app.config["SECRET_KEY"] = "clms123"
+    
 
     db.init_app(app)
 
