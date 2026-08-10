@@ -6,88 +6,204 @@
 
 <div class="container">
 
-    <div class="card shadow">
+    <div class="row justify-content-center">
 
-        <div class="card-header bg-success text-white">
-            <h3 class="mb-0">🔍 Search Student</h3>
-        </div>
+        <div class="col-lg-7">
 
-        <div class="card-body">
+            <div class="card shadow">
 
-            <form method="POST">
+                <div class="card-header bg-success text-white">
 
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Student ID or Name
-                    </label>
-
-                    <input
-                        type="text"
-                        name="keyword"
-                        class="form-control"
-                        placeholder="Enter Student ID or Name"
-                        required>
+                    <h3 class="mb-0">
+                        🔍 Search Student
+                    </h3>
 
                 </div>
 
-                <button class="btn btn-success w-100">
-                    🔍 Search
-                </button>
-
-            </form>
-
-
-            {% if student %}
-
-            <hr>
-
-            <h4>Student Details</h4>
-
-            <div class="card bg-light mb-4">
-
                 <div class="card-body">
 
-                    <p>
-                        <strong>Student ID:</strong>
-                        {{ student.student_id }}
-                    </p>
+                    <!-- SEARCH -->
 
-                    <p>
-                        <strong>Name:</strong>
-                        {{ student.name }}
-                    </p>
+                    <form method="POST">
 
-                    <p>
-                        <strong>Year:</strong>
-                        {{ student.year }}
-                    </p>
+                        <div class="mb-3">
 
-                    <p>
-                        <strong>Branch:</strong>
-                        {{ student.branch }}
-                    </p>
+                            <label class="form-label">
+                                Student ID or Name
+                            </label>
 
-                    <p>
-                        <strong>Section:</strong>
-                        {{ student.section }}
-                    </p>
+                            <input
+                                type="text"
+                                name="keyword"
+                                class="form-control"
+                                placeholder="Enter Student ID or Name"
+                                required>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-success w-100">
+
+                            🔍 Search Student
+
+                        </button>
+
+                    </form>
+
+
+                    {% if student %}
+
+                    <hr class="my-4">
+
+
+                    <!-- STUDENT DETAILS -->
+
+                    <h4 class="mb-3">
+                        Student Details
+                    </h4>
+
+                    <div class="card bg-light">
+
+                        <div class="card-body">
+
+                            <p>
+                                <strong>Student ID:</strong>
+                                {{ student.student_id }}
+                            </p>
+
+                            <p>
+                                <strong>Name:</strong>
+                                {{ student.name }}
+                            </p>
+
+                            <p>
+                                <strong>Year:</strong>
+                                {{ student.year }}
+                            </p>
+
+                            <p>
+                                <strong>Branch:</strong>
+                                {{ student.branch }}
+                            </p>
+
+                            <p>
+                                <strong>Section:</strong>
+                                {{ student.section }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ATTENDANCE SUMMARY -->
+
+                    <h4 class="mt-4 mb-3">
+                        📊 Attendance Summary
+                    </h4>
+
+                    <div class="row text-center">
+
+                        <div class="col-md-3 mb-3">
+
+                            <div class="card shadow-sm">
+
+                                <div class="card-body">
+
+                                    <h6>
+                                        Working Days
+                                    </h6>
+
+                                    <h3>
+                                        {{ working_days }}
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-3 mb-3">
+
+                            <div class="card shadow-sm">
+
+                                <div class="card-body">
+
+                                    <h6>
+                                        Present Days
+                                    </h6>
+
+                                    <h3>
+                                        {{ present_days }}
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-3 mb-3">
+
+                            <div class="card shadow-sm">
+
+                                <div class="card-body">
+
+                                    <h6>
+                                        Absent Days
+                                    </h6>
+
+                                    <h3>
+                                        {{ absent_days }}
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-3 mb-3">
+
+                            <div class="card shadow-sm">
+
+                                <div class="card-body">
+
+                                    <h6>
+                                        Attendance
+                                    </h6>
+
+                                    <h3>
+                                        {{ "%.2f"|format(attendance_percentage) }}%
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    {% elif request.method == "POST" %}
+
+                    <div class="alert alert-warning mt-4">
+
+                        Student not found.
+
+                    </div>
+
+                    {% endif %}
 
                 </div>
 
             </div>
-
-            {% else %}
-
-                {% if request.method == "POST" %}
-
-                <div class="alert alert-warning mt-3">
-                    Student not found.
-                </div>
-
-                {% endif %}
-
-            {% endif %}
 
         </div>
 
