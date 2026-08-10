@@ -6,73 +6,248 @@
 
 <div class="card shadow">
 
+    <!-- Header -->
     <div class="card-header bg-primary text-white">
 
-        <h3>Attendance Records</h3>
+        <h3 class="mb-0">
+            📋 Attendance Records
+        </h3>
 
     </div>
 
+
     <div class="card-body">
 
-        <table class="table table-bordered table-hover">
 
-            <thead class="table-dark">
+        <!-- ================================= -->
+        <!-- DATE CONTROLS -->
+        <!-- ================================= -->
 
-                <tr>
+        <div class="row mb-4">
 
-                    <th>ID</th>
+            <!-- Selected Date -->
+            <div class="col-md-5">
 
-                    <th>Name</th>
+                <label class="form-label fw-bold">
+                    Select Date
+                </label>
 
-                    <th>Teacher</th>
+                <form
+                    method="GET"
+                    action="{{ url_for('attendance.attendance_list') }}"
+                    class="d-flex gap-2">
 
-                    <th>Category</th>
+                    <input
+                        type="date"
+                        name="date"
+                        class="form-control"
+                        value="{{ selected_date }}"
+                        required>
 
-                    <th>Language</th>
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
 
-                    <th>Topic</th>
+                        View
 
-                    <th>System</th>
+                    </button>
 
-                    <th>Date</th>
+                </form>
 
-                    <th>Time</th>
+            </div>
 
-                </tr>
 
-            </thead>
+            <!-- Today Button -->
+            <div class="col-md-3 d-flex align-items-end">
 
-            <tbody>
+                <a
+                    href="{{ url_for('attendance.attendance_list') }}"
+                    class="btn btn-success w-100">
 
-            {% for record in records %}
+                    📅 Today
 
-                <tr>
+                </a>
 
-                    <td>{{ record.student_id }}</td>
+            </div>
 
-                    <td>{{ record.student_name }}</td>
 
-                    <td>{{ record.teacher }}</td>
+            <!-- All Attendance -->
+            <div class="col-md-4 d-flex align-items-end">
 
-                    <td>{{ record.category }}</td>
+                <a
+                    href="{{ url_for('attendance.attendance_list', all='true') }}"
+                    class="btn btn-secondary w-100">
 
-                    <td>{{ record.language }}</td>
+                    📚 All Attendance
 
-                    <td>{{ record.topic }}</td>
+                </a>
 
-                    <td>{{ record.system_number }}</td>
+            </div>
 
-                    <td>{{ record.date }}</td>
+        </div>
 
-                    <td>{{ record.time_in.strftime("%I:%M %p") }}</td>
 
-                </tr>
+        <hr>
 
-            {% endfor %}
 
-            </tbody>
+        <!-- ================================= -->
+        <!-- CURRENT DATE / TITLE -->
+        <!-- ================================= -->
 
-        </table>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <div>
+
+                {% if show_all %}
+
+                    <h4>
+                        📚 All Attendance
+                    </h4>
+
+                {% else %}
+
+                    <h4>
+                        📅 Attendance: {{ display_date }}
+                    </h4>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Total -->
+            <div>
+
+                <span class="badge bg-primary fs-6">
+
+                    Total:
+                    {{ records|length }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- ATTENDANCE TABLE -->
+        <!-- ================================= -->
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>S.No</th>
+
+                        <th>Student ID</th>
+
+                        <th>Name</th>
+
+                        <th>Year</th>
+
+                        <th>Branch</th>
+
+                        <th>Section</th>
+
+                        <th>Topic</th>
+
+                        <th>System</th>
+
+                        <th>Remarks</th>
+
+                        <th>Date</th>
+
+                        <th>Time</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for record in records %}
+
+                    <tr>
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+                        <td>
+                            {{ record.student_id }}
+                        </td>
+
+                        <td>
+                            {{ record.student_name }}
+                        </td>
+
+                        <td>
+                            {{ record.year }}
+                        </td>
+
+                        <td>
+                            {{ record.branch }}
+                        </td>
+
+                        <td>
+                            {{ record.section }}
+                        </td>
+
+                        <td>
+                            {{ record.topic }}
+                        </td>
+
+                        <td>
+                            {{ record.system_number }}
+                        </td>
+
+                        <td>
+                            {{ record.remarks }}
+                        </td>
+
+                        <td>
+                            {{ record.date }}
+                        </td>
+
+                        <td>
+
+                            {% if record.time_in %}
+
+                                {{ record.time_in.strftime("%I:%M %p") }}
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="11"
+                            class="text-center text-muted py-4">
+
+                            📭 No attendance found for this date.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
