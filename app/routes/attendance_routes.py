@@ -103,25 +103,47 @@ def attendance_report():
 
     records = []
 
+    selected_group = ""
+    selected_report_type = "daily"
+    student_id = ""
+
     if request.method == "POST":
 
-        student_id = request.form["student_id"].strip()
-
-        report_type = request.form["report_type"]
+        student_id = request.form.get("student_id", "").strip()
+        selected_report_type = request.form.get("report_type", "daily")
+        selected_group = request.form.get("group", "").strip()
 
         today = datetime.now().date()
 
-        query = Attendance.query.filter(
-            Attendance.student_id == student_id
-        )
+        # Start with all attendance records
+        query = Attendance.query
 
-        if report_type == "daily":
+        # --------------------------------
+        # STUDENT FILTER
+        # --------------------------------
+        if student_id:
+            query = query.filter(
+                Attendance.student_id == student_id
+            )
+
+        # --------------------------------
+        # GROUP / BRANCH FILTER
+        # --------------------------------
+        if selected_group:
+            query = query.filter(
+                Attendance.branch == selected_group
+            )
+
+        # --------------------------------
+        # DATE FILTER
+        # --------------------------------
+        if selected_report_type == "daily":
 
             query = query.filter(
                 Attendance.date == today
             )
 
-        elif report_type == "weekly":
+        elif selected_report_type == "weekly":
 
             start_date = today - timedelta(days=7)
 
@@ -129,7 +151,7 @@ def attendance_report():
                 Attendance.date >= start_date
             )
 
-        elif report_type == "monthly":
+        elif selected_report_type == "monthly":
 
             start_date = today.replace(day=1)
 
@@ -138,14 +160,17 @@ def attendance_report():
             )
 
         records = query.order_by(
-            Attendance.date.desc()
+            Attendance.date.desc(),
+            Attendance.time_in.desc()
         ).all()
 
     return render_template(
         "admin/report.html",
-        records=records
+        records=records,
+        selected_group=selected_group,
+        selected_report_type=selected_report_type,
+        student_id=student_id
     )
-
 
 @attendance_bp.route("/admin/report/export", methods=["POST"])
 def export_report():
@@ -153,14 +178,39 @@ def export_report():
     if "admin_id" not in session:
         return redirect(url_for("main.admin_login"))
 
-    student_id = request.form["student_id"].strip()
-    report_type = request.form["report_type"]
+    student_id = request.form.get("student_id", "").strip()
+    report_type = request.form.get("report_type", "daily")
+    selected_group = request.form.get("group", "").strip()
 
     today = datetime.now().date()
 
-    query = Attendance.query.filter(
-        Attendance.student_id == student_id
-    )
+    # --------------------------------
+    # START QUERY
+    # --------------------------------
+
+    query = Attendance.query
+
+    # --------------------------------
+    # STUDENT FILTER
+    # --------------------------------
+
+    if student_id:
+        query = query.filter(
+            Attendance.student_id == student_id
+        )
+
+    # --------------------------------
+    # GROUP FILTER
+    # --------------------------------
+
+    if selected_group:
+        query = query.filter(
+            Attendance.branch == selected_group
+        )
+
+    # --------------------------------
+    # DATE FILTER
+    # --------------------------------
 
     if report_type == "daily":
 
@@ -185,38 +235,126 @@ def export_report():
         )
 
     records = query.order_by(
-        Attendance.date.desc()
+        Attendance.date.desc(),
+        Attendance.time_in.desc()
     ).all()
+
+    # --------------------------------
+    # CREATE EXCEL FILE
+    # --------------------------------
 
     wb = Workbook()
 
-    ws = wb.active
+    # Remove default sheet
+    default_ws = wb.active
+    wb.remove(default_ws)
 
-    ws.title = "Attendance Report"
+    # --------------------------------
+    # GROUP RECORDS
+    # --------------------------------
 
-    ws.append([
-        "Date",
-        "Student ID",
-        "Student Name",
-        "Teacher",
-        "Language",
-        "Topic",
-        "System Number",
-        "Remarks"
-    ])
+    groups = {}
 
     for r in records:
 
+        branch = r.branch or "Unknown"
+
+        if branch not in groups:
+            groups[branch] = []
+
+        groups[branch].append(r)
+
+    # --------------------------------
+    # IF NO RECORDS
+    # --------------------------------
+
+    if not groups:
+
+        ws = wb.create_sheet("No Data")
+
         ws.append([
-            str(r.date),
-            r.student_id,
-            r.student_name,
-            r.teacher,
-            r.language,
-            r.topic,
-            r.system_number,
-            r.remarks
+            "No attendance records found"
         ])
+
+    else:
+
+        # --------------------------------
+        # CREATE SHEETS GROUP-WISE
+        # --------------------------------
+
+        for branch, branch_records in groups.items():
+
+            # Excel sheet names cannot exceed 31 characters
+            sheet_name = branch[:31]
+
+            ws = wb.create_sheet(sheet_name)
+
+            # Header
+            ws.append([
+                "Date",
+                "Student ID",
+                "Student Name",
+                "Year",
+                "Branch",
+                "Section",
+                "Teacher",
+                "Category",
+                "Language",
+                "Topic",
+                "System Number",
+                "Remarks",
+                "Time In"
+            ])
+
+            # Data
+            for r in branch_records:
+
+                ws.append([
+                    str(r.date),
+                    r.student_id,
+                    r.student_name,
+                    r.year,
+                    r.branch,
+                    r.section,
+                    r.teacher,
+                    r.category,
+                    r.language,
+                    r.topic,
+                    r.system_number,
+                    r.remarks,
+                    str(r.time_in)
+                ])
+
+            # --------------------------------
+            # MAKE COLUMNS EASIER TO READ
+            # --------------------------------
+
+            for column in ws.columns:
+
+                max_length = 0
+
+                column_letter = column[0].column_letter
+
+                for cell in column:
+
+                    if cell.value is not None:
+
+                        length = len(str(cell.value))
+
+                        if length > max_length:
+                            max_length = length
+
+                ws.column_dimensions[column_letter].width = min(
+                    max_length + 2,
+                    30
+                )
+
+            # Freeze header
+            ws.freeze_panes = "A2"
+
+    # --------------------------------
+    # SAVE FILE
+    # --------------------------------
 
     output = BytesIO()
 
@@ -224,9 +362,18 @@ def export_report():
 
     output.seek(0)
 
+    # --------------------------------
+    # FILE NAME
+    # --------------------------------
+
+    if selected_group:
+        filename = f"{selected_group}_Attendance_Report.xlsx"
+    else:
+        filename = "All_Groups_Attendance_Report.xlsx"
+
     return send_file(
         output,
         as_attachment=True,
-        download_name="Attendance_Report.xlsx",
+        download_name=filename,
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
