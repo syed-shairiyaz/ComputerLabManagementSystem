@@ -192,9 +192,21 @@ def export_report():
     if "admin_id" not in session:
         return redirect(url_for("main.admin_login"))
 
+    # --------------------------------
+    # GET FILTER VALUES
+    # --------------------------------
+
     student_id = request.form.get("student_id", "").strip()
-    report_type = request.form.get("report_type", "daily")
-    selected_group = request.form.get("group", "").strip()
+
+    report_type = request.form.get(
+        "report_type",
+        "daily"
+    )
+
+    selected_group = request.form.get(
+        "group",
+        ""
+    ).strip()
 
     today = datetime.now().date()
 
@@ -209,15 +221,17 @@ def export_report():
     # --------------------------------
 
     if student_id:
+
         query = query.filter(
             Attendance.student_id == student_id
         )
 
     # --------------------------------
-    # GROUP FILTER
+    # BRANCH / GROUP FILTER
     # --------------------------------
 
     if selected_group:
+
         query = query.filter(
             Attendance.branch == selected_group
         )
@@ -248,38 +262,42 @@ def export_report():
             Attendance.date >= start_date
         )
 
+    # --------------------------------
+    # GET RECORDS
+    # --------------------------------
+
     records = query.order_by(
         Attendance.date.desc(),
         Attendance.time_in.desc()
     ).all()
 
     # --------------------------------
-    # CREATE EXCEL FILE
+    # CREATE EXCEL
     # --------------------------------
 
     wb = Workbook()
 
     # Remove default sheet
-    default_ws = wb.active
-    wb.remove(default_ws)
+    default_sheet = wb.active
+    wb.remove(default_sheet)
 
     # --------------------------------
-    # GROUP RECORDS
+    # GROUP RECORDS BY BRANCH
     # --------------------------------
 
     groups = {}
 
-    for r in records:
+    for record in records:
 
-        branch = r.branch or "Unknown"
+        branch = record.branch or "Unknown"
 
         if branch not in groups:
             groups[branch] = []
 
-        groups[branch].append(r)
+        groups[branch].append(record)
 
     # --------------------------------
-    # IF NO RECORDS
+    # NO DATA
     # --------------------------------
 
     if not groups:
@@ -290,84 +308,97 @@ def export_report():
             "No attendance records found"
         ])
 
-    else:
+    # --------------------------------
+    # CREATE BRANCH SHEETS
+    # --------------------------------
 
-        # --------------------------------
-        # CREATE SHEETS GROUP-WISE
-        # --------------------------------
+    else:
 
         for branch, branch_records in groups.items():
 
-            # Excel sheet names cannot exceed 31 characters
+            # Excel sheet name maximum = 31 characters
             sheet_name = branch[:31]
 
             ws = wb.create_sheet(sheet_name)
 
-            # Header
+            # --------------------------------
+            # CLEAN HEADER
+            # --------------------------------
+
             ws.append([
                 "Date",
                 "Student ID",
                 "Student Name",
-                "Year",
                 "Branch",
-                "Section",
-                "Teacher",
-                "Category",
-                "Language",
                 "Topic",
                 "System Number",
                 "Remarks",
                 "Time In"
             ])
 
-            # Data
-            for r in branch_records:
+            # --------------------------------
+            # ADD ATTENDANCE DATA
+            # --------------------------------
+
+            for record in branch_records:
 
                 ws.append([
-                    str(r.date),
-                    r.student_id,
-                    r.student_name,
-                    r.year,
-                    r.branch,
-                    r.section,
-                    r.teacher,
-                    r.category,
-                    r.language,
-                    r.topic,
-                    r.system_number,
-                    r.remarks,
-                    str(r.time_in)
+
+                    str(record.date),
+
+                    record.student_id,
+
+                    record.student_name,
+
+                    record.branch,
+
+                    record.topic,
+
+                    record.system_number,
+
+                    record.remarks,
+
+                    record.time_in.strftime("%I:%M %p")
+                    if record.time_in
+                    else ""
+
                 ])
 
             # --------------------------------
-            # MAKE COLUMNS EASIER TO READ
+            # FORMAT COLUMNS
             # --------------------------------
 
-            for column in ws.columns:
+            column_widths = {
 
-                max_length = 0
+                "A": 14,
+                "B": 15,
+                "C": 25,
+                "D": 12,
+                "E": 30,
+                "F": 18,
+                "G": 35,
+                "H": 15
 
-                column_letter = column[0].column_letter
+            }
 
-                for cell in column:
+            for column, width in column_widths.items():
 
-                    if cell.value is not None:
+                ws.column_dimensions[column].width = width
 
-                        length = len(str(cell.value))
+            # --------------------------------
+            # FREEZE HEADER
+            # --------------------------------
 
-                        if length > max_length:
-                            max_length = length
-
-                ws.column_dimensions[column_letter].width = min(
-                    max_length + 2,
-                    30
-                )
-
-            # Freeze header
             ws.freeze_panes = "A2"
 
+            # --------------------------------
+            # AUTO FILTER
+            # --------------------------------
+
+            ws.auto_filter.ref = ws.dimensions
+
     # --------------------------------
-    # SAVE FILE
+    # SAVE EXCEL TO MEMORY
     # --------------------------------
 
     output = BytesIO()
@@ -381,13 +412,36 @@ def export_report():
     # --------------------------------
 
     if selected_group:
-        filename = f"{selected_group}_Attendance_Report.xlsx"
+
+        filename = (
+            f"{selected_group}_"
+            f"{report_type.capitalize()}_"
+            f"Attendance.xlsx"
+        )
+
     else:
-        filename = "All_Groups_Attendance_Report.xlsx"
+
+        filename = (
+            f"All_Groups_"
+            f"{report_type.capitalize()}_"
+            f"Attendance.xlsx"
+        )
+
+    # --------------------------------
+    # DOWNLOAD
+    # --------------------------------
 
     return send_file(
+
         output,
+
         as_attachment=True,
+
         download_name=filename,
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+        mimetype=(
+            "application/vnd.openxmlformats-"
+            "officedocument.spreadsheetml.sheet"
+        )
+
     )
