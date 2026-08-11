@@ -1,0 +1,174 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Announcement
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h4 class="mb-0">
+                        📢 {{ announcement.title }}
+                    </h4>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <!-- FLASH MESSAGES -->
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+
+                        {% if messages %}
+
+                            {% for category, message in messages %}
+
+                                <div class="alert alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+
+                            {% endfor %}
+
+                        {% endif %}
+
+                    {% endwith %}
+
+
+                    <!-- MESSAGE -->
+
+                    <div class="mb-4">
+
+                        <p style="white-space: pre-line;">
+
+                            {{ announcement.message }}
+
+                        </p>
+
+                    </div>
+
+
+                    <hr>
+
+
+                    <!-- DATE -->
+
+                    <p class="text-muted">
+
+                        Posted:
+                        {{ announcement.created_at.strftime("%d-%m-%Y %I:%M %p") }}
+
+                    </p>
+
+
+                    {% if announcement.allow_response %}
+
+                        <hr>
+
+                        <h5>
+                            💬 Reply
+                        </h5>
+
+
+                        <form method="POST">
+
+                            <div class="mb-3">
+
+                                <textarea
+                                    name="reply"
+                                    class="form-control"
+                                    rows="4"
+                                    placeholder="Enter your reply..."
+                                    required></textarea>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                📤 Submit Reply
+
+                            </button>
+
+                        </form>
+
+
+                        {% if responses %}
+
+                            <hr>
+
+                            <h5>
+                                Your Previous Replies
+                            </h5>
+
+
+                            {% for response in responses %}
+
+                                <div class="alert alert-light border">
+
+                                    <p class="mb-1">
+
+                                        {{ response.response }}
+
+                                    </p>
+
+                                    <small class="text-muted">
+
+                                        {{ response.created_at.strftime(
+                                            "%d-%m-%Y %I:%M %p"
+                                        ) }}
+
+                                    </small>
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% endif %}
+
+
+                    {% else %}
+
+                        <div class="alert alert-secondary">
+
+                            ℹ️ This announcement does not require a reply.
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <a
+                        href="{{ url_for(
+                            'announcement.student_announcements'
+                        ) }}"
+                        class="btn btn-secondary mt-3">
+
+                        ← Back to Announcements
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

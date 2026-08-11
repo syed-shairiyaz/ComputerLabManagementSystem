@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 
 from app import db
-from app.models import Student, Attendance
+from app.models import Student, Attendance, Announcement, AnnouncementResponse
 
 
 student_bp = Blueprint("student", __name__)
@@ -202,16 +202,78 @@ def delete_student(id):
 @student_bp.route("/student/dashboard")
 def student_dashboard():
 
+    # -----------------------------------------
+    # STUDENT LOGIN PROTECTION
+    # -----------------------------------------
+
     if "student_id" not in session:
         return redirect(
             url_for("main.student_login")
         )
 
-    return render_template(
-        "student/dashboard.html",
-        name=session["student_name"]
+    # -----------------------------------------
+    # GET LOGGED-IN STUDENT
+    # -----------------------------------------
+
+    student = Student.query.get_or_404(
+        session["student_id"]
     )
 
+    # -----------------------------------------
+    # GET ANNOUNCEMENTS
+    # -----------------------------------------
+
+    announcements = Announcement.query.filter(
+
+        Announcement.status == "Published",
+
+        (
+            # All students
+            (
+                Announcement.target_year.is_(None)
+            )
+            |
+            (
+                Announcement.target_year == ""
+            )
+        )
+        |
+        (
+            Announcement.target_year == student.year
+        ),
+
+        (
+            # All branches
+            (
+                Announcement.target_branch.is_(None)
+            )
+            |
+            (
+                Announcement.target_branch == ""
+            )
+        )
+        |
+        (
+            Announcement.target_branch == student.branch
+        )
+
+    ).order_by(
+        Announcement.created_at.desc()
+    ).all()
+
+    # -----------------------------------------
+    # STUDENT DASHBOARD
+    # -----------------------------------------
+
+    return render_template(
+        "student/dashboard.html",
+
+        name=student.name,
+
+        student=student,
+
+        announcements=announcements
+    )
 
 # =========================================================
 # PUBLIC STUDENT SEARCH
@@ -340,4 +402,140 @@ def admin_search_student():
         "admin/search_student.html",
         student=student,
         records=records
+    )
+# =========================================================
+# STUDENT - REPLY TO ANNOUNCEMENT
+# =========================================================
+
+@student_bp.route(
+    "/student/announcement/<int:announcement_id>/respond",
+    methods=["POST"]
+)
+def respond_to_announcement(announcement_id):
+
+    # -----------------------------------------
+    # STUDENT LOGIN PROTECTION
+    # -----------------------------------------
+
+    if "student_id" not in session:
+        return redirect(
+            url_for("main.student_login")
+        )
+
+    # -----------------------------------------
+    # GET STUDENT
+    # -----------------------------------------
+
+    student = Student.query.get_or_404(
+        session["student_id"]
+    )
+
+    # -----------------------------------------
+    # GET ANNOUNCEMENT
+    # -----------------------------------------
+
+    announcement = Announcement.query.get_or_404(
+        announcement_id
+    )
+
+    # -----------------------------------------
+    # CHECK REPLY PERMISSION
+    # -----------------------------------------
+
+    if not announcement.allow_response:
+
+        flash(
+            "Replies are not allowed for this announcement.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("student.student_dashboard")
+        )
+
+    # -----------------------------------------
+    # GET RESPONSE
+    # -----------------------------------------
+
+    response_text = request.form.get(
+        "response",
+        ""
+    ).strip()
+
+    # -----------------------------------------
+    # VALIDATION
+    # -----------------------------------------
+
+    if not response_text:
+
+        flash(
+            "Please enter your response.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("student.student_dashboard")
+        )
+
+    # -----------------------------------------
+    # CHECK EXISTING RESPONSE
+    # -----------------------------------------
+
+    existing_response = AnnouncementResponse.query.filter_by(
+        announcement_id=announcement.id,
+        student_id=student.student_id
+    ).first()
+
+    # -----------------------------------------
+    # UPDATE EXISTING RESPONSE
+    # -----------------------------------------
+
+    if existing_response:
+
+        existing_response.response_text = response_text
+
+        existing_response.replied = True
+
+        db.session.commit()
+
+        flash(
+            "Your response has been updated successfully.",
+            "success"
+        )
+
+        return redirect(
+            url_for("student.student_dashboard")
+        )
+
+    # -----------------------------------------
+    # CREATE NEW RESPONSE
+    # -----------------------------------------
+
+    response = AnnouncementResponse(
+
+        announcement_id=announcement.id,
+
+        student_id=student.student_id,
+
+        response_text=response_text,
+
+        replied=True
+
+    )
+
+    db.session.add(response)
+
+    db.session.commit()
+
+    # -----------------------------------------
+    # SUCCESS
+    # -----------------------------------------
+
+    flash(
+        "Your response has been submitted successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("student.student_dashboard")
     )

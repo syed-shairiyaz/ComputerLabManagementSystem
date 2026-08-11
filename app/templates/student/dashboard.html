@@ -1,31 +1,239 @@
 {% extends "layout/base.html" %}
 
-{% block title %}Student Dashboard{% endblock %}
+
+{% block title %}
+Student Dashboard
+{% endblock %}
+
 
 {% block content %}
 
-<div class="container mt-5">
+
+<div class="container mt-4">
+
+
+    <!-- ========================================= -->
+    <!-- STUDENT WELCOME -->
+    <!-- ========================================= -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-body">
+
+            <h2>
+                Welcome, {{ student.name }} 👋
+            </h2>
+
+            <p class="text-muted mb-0">
+                Computer Lab Management System
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- ANNOUNCEMENTS -->
+    <!-- ========================================= -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            <h4 class="mb-0">
+                📢 Announcements
+            </h4>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            {% if announcements %}
+
+
+                {% for announcement in announcements %}
+
+
+                    <div class="card mb-3 border">
+
+
+                        <div class="card-body">
+
+
+                            <!-- TITLE -->
+
+                            <div class="d-flex justify-content-between align-items-start">
+
+                                <h5 class="card-title">
+
+                                    {{ announcement.title }}
+
+                                </h5>
+
+
+                                {% if announcement.priority == "High" %}
+
+                                    <span class="badge bg-danger">
+                                        High Priority
+                                    </span>
+
+                                {% elif announcement.priority == "Medium" %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Medium Priority
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        Normal
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- MESSAGE -->
+
+                            <p class="card-text mt-3">
+
+                                {{ announcement.message }}
+
+                            </p>
+
+
+                            <hr>
+
+
+                            <!-- DATE -->
+
+                            <small class="text-muted">
+
+                                Posted:
+
+                                {{ announcement.created_at.strftime("%d-%m-%Y %I:%M %p") }}
+
+                            </small>
+
+
+                            <!-- ================================= -->
+                            <!-- STUDENT REPLY -->
+                            <!-- ================================= -->
+
+                            {% if announcement.allow_response %}
+
+
+                                <hr>
+
+
+                                <h6>
+                                    💬 Your Response
+                                </h6>
+
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'student.respond_to_announcement',
+                                        announcement_id=announcement.id
+                                    ) }}"
+                                >
+
+
+                                    <textarea
+                                        name="response"
+                                        class="form-control mb-2"
+                                        rows="3"
+                                        placeholder="Write your response..."
+                                        required
+                                    ></textarea>
+
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                    >
+
+                                        Send Response
+
+                                    </button>
+
+
+                                </form>
+
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            {% else %}
+
+
+                <div class="text-center py-4">
+
+                    <h5 class="text-muted">
+                        📭 No announcements
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        There are currently no announcements for you.
+                    </p>
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- ATTENDANCE -->
+    <!-- ========================================= -->
 
     <div class="card shadow">
 
         <div class="card-body text-center">
 
-            <h2>Welcome {{ name }}</h2>
+            <h4>
+                Attendance
+            </h4>
 
-            <hr>
+            <p>
+                Manage your lab attendance.
+            </p>
 
-            <h4>Computer Lab Management System</h4>
 
-            <p>You have successfully logged in.</p>
+            <a
+                href="/student/attendance"
+                class="btn btn-primary"
+            >
 
-            <a href="/student/attendance" class="btn btn-primary">
-                Mark Attendance
+                📝 Mark Attendance
+
             </a>
 
         </div>
 
     </div>
 
+
 </div>
+
 
 {% endblock %}

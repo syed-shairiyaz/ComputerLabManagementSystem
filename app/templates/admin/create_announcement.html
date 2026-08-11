@@ -1,0 +1,266 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Create Announcement
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow">
+
+                <!-- HEADER -->
+
+                <div class="card-header bg-primary text-white">
+
+                    <h4 class="mb-0">
+                        📢 Create Announcement
+                    </h4>
+
+                </div>
+
+
+                <div class="card-body">
+
+
+                    <!-- FLASH MESSAGES -->
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+
+                        {% if messages %}
+
+                            {% for category, message in messages %}
+
+                                <div class="alert alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+
+                            {% endfor %}
+
+                        {% endif %}
+
+                    {% endwith %}
+
+
+                    <!-- FORM -->
+
+                    <form method="POST">
+
+
+                        <!-- ===================================== -->
+                        <!-- ANNOUNCEMENT TITLE -->
+                        <!-- ===================================== -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Announcement Title
+                            </label>
+
+                            <input
+                                type="text"
+                                name="title"
+                                class="form-control"
+                                placeholder="Example: Scholarship KYC Pending"
+                                required>
+
+                        </div>
+
+
+                        <!-- ===================================== -->
+                        <!-- ANNOUNCEMENT MESSAGE -->
+                        <!-- ===================================== -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Announcement Message
+                            </label>
+
+                            <textarea
+                                name="message"
+                                class="form-control"
+                                rows="5"
+                                placeholder="Enter the announcement details..."
+                                required></textarea>
+
+                        </div>
+
+
+                        <!-- ===================================== -->
+                        <!-- STUDENT YEAR -->
+                        <!-- ===================================== -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Students
+                            </label>
+
+                            <select
+                                name="target_year"
+                                class="form-select"
+                                required>
+
+                                <option value="all">
+                                    All Students
+                                </option>
+
+                                <option value="1">
+                                    1st Year
+                                </option>
+
+                                <option value="2">
+                                    2nd Year
+                                </option>
+
+                                <option value="3">
+                                    3rd Year
+                                </option>
+
+                                <option value="4">
+                                    4th Year
+                                </option>
+
+                            </select>
+
+                            <small class="text-muted">
+                                Select which students should receive this announcement.
+                            </small>
+
+                        </div>
+
+
+                        <!-- ===================================== -->
+                        <!-- BRANCH -->
+                        <!-- ===================================== -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Branch / Course
+                            </label>
+
+                            <select
+                                name="target_branch"
+                                class="form-select"
+                                required>
+
+                                <option value="all">
+                                    All Branches
+                                </option>
+
+                                <option value="CSE">
+                                    CSE
+                                </option>
+
+                                <option value="CSE-CS">
+                                    CSE-CS
+                                </option>
+
+                                <option value="CSE-DS">
+                                    CSE-DS
+                                </option>
+
+                                <option value="AIML">
+                                    AIML
+                                </option>
+
+                                <option value="EEE">
+                                    EEE
+                                </option>
+
+                                <option value="ECE">
+                                    ECE
+                                </option>
+
+                            </select>
+
+                            <small class="text-muted">
+                                Select a specific branch or send it to all branches.
+                            </small>
+
+                        </div>
+
+
+                        <!-- ===================================== -->
+                        <!-- ALLOW STUDENT REPLY -->
+                        <!-- ===================================== -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+                                Allow Student Reply?
+                            </label>
+
+                            <select
+                                name="allow_response"
+                                class="form-select"
+                                required>
+
+                                <option value="no">
+                                    No
+                                </option>
+
+                                <option value="yes">
+                                    Yes
+                                </option>
+
+                            </select>
+
+                            <small class="text-muted">
+                                If enabled, students can reply to this announcement.
+                            </small>
+
+                        </div>
+
+
+                        <!-- ===================================== -->
+                        <!-- BUTTONS -->
+                        <!-- ===================================== -->
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                📢 Publish Announcement
+
+                            </button>
+
+
+                            <a
+                                href="{{ url_for('announcement.announcements') }}"
+                                class="btn btn-secondary">
+
+                                Cancel
+
+                            </a>
+
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% endblock %}
