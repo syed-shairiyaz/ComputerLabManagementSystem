@@ -6,10 +6,10 @@ db = SQLAlchemy()
 
 
 def create_app():
+
     app = Flask(__name__)
 
     app.config.from_object(Config)
-    
 
     db.init_app(app)
 
@@ -19,24 +19,32 @@ def create_app():
         Teacher,
         Attendance,
         ComputerSystem,
-        Category
+        Category,
+        WorkingDay,
+        Announcement,
+        AnnouncementResponse
     )
 
     with app.app_context():
+
         db.create_all()
 
-        admin = Admin.query.filter_by(username="admin").first()
+        admin = Admin.query.filter_by(
+            username="admin"
+        ).first()
 
         if not admin:
+
             admin = Admin(
-               username="admin",
-               password="admin123",
-              full_name="Administrator"
-           )
+                username="admin",
+                password="admin123",
+                full_name="Administrator"
+            )
 
         db.session.add(admin)
+
         db.session.commit()
-    
+
 
     from app.routes import (
         main,
@@ -51,5 +59,5 @@ def create_app():
     app.register_blueprint(teacher_bp)
     app.register_blueprint(attendance_bp)
     app.register_blueprint(computer_bp)
-    
+
     return app

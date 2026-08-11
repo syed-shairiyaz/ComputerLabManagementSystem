@@ -5,3 +5,5 @@ from .attendance import Attendance
 from .computer_system import ComputerSystem
 from .category import Category
 from .working_day import WorkingDay
+from .announcement import Announcement
+from .announcement_response import AnnouncementResponse
