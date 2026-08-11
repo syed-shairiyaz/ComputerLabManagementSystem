@@ -6,69 +6,308 @@ CLMS - Home
 
 {% block content %}
 
-<div class="row justify-content-center">
+<style>
+    .clms-home {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        padding: 40px 0;
+    }
 
-    <div class="col-md-7 col-lg-6">
+    .hero-card {
+        background: #ffffff;
+        border: none;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+    }
 
-        <div class="card shadow-lg">
+    .hero-section {
+        padding: 55px 45px;
+    }
 
-            <div class="card-body text-center p-5">
+    .brand-icon {
+        width: 75px;
+        height: 75px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 22px;
+        border-radius: 20px;
+        background: #f1f5f9;
+        font-size: 38px;
+    }
 
-                <!-- Logo / Title -->
+    .hero-title {
+        font-size: 2.7rem;
+        font-weight: 700;
+        letter-spacing: -1px;
+        color: #111827;
+    }
 
-                <h1 class="mb-3">
-                    💻 CLMS
-                </h1>
+    .hero-subtitle {
+        color: #64748b;
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 15px auto 30px;
+        line-height: 1.7;
+    }
 
-                <h4 class="mb-3">
-                    Computer Lab Management System
-                </h4>
+    .login-btn {
+        border-radius: 12px;
+        padding: 13px 22px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
 
-                <p class="text-muted">
-                    Student Attendance & Lab Management
-                </p>
+    .login-btn:hover {
+        transform: translateY(-2px);
+    }
 
-                <hr class="my-4">
+    .feature-section {
+        background: #f8fafc;
+        padding: 30px 35px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .feature-box {
+        padding: 20px 10px;
+    }
+
+    .feature-icon {
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
+
+    .feature-title {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 5px;
+    }
+
+    .feature-text {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .admin-section {
+        margin-top: 30px;
+        padding-top: 25px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .admin-link {
+        color: #374151;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .admin-link:hover {
+        color: #000000;
+    }
+
+    @media (max-width: 576px) {
+        .hero-section {
+            padding: 40px 22px;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .feature-section {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="container clms-home">
+
+    <div class="row justify-content-center w-100">
+
+        <div class="col-lg-10 col-xl-9">
+
+            <div class="hero-card">
+
+                <!-- HERO SECTION -->
+                <div class="hero-section text-center">
+
+                    <div class="brand-icon">
+                        💻
+                    </div>
+
+                    <h1 class="hero-title">
+                        Computer Lab Management System
+                    </h1>
+
+                    <p class="hero-subtitle">
+                        A simple and organized platform for managing
+                        computer laboratories, student attendance,
+                        computers and student information.
+                    </p>
 
 
-                <!-- STUDENT LOGIN -->
+                    <!-- LOGIN BUTTONS -->
 
-                <a
-                    href="{{ url_for('main.student_login') }}"
-                    class="btn btn-success btn-lg w-100 mb-3">
+                    <div class="row justify-content-center g-3">
 
-                    🎓 Student Login
+                        <div class="col-md-5">
 
-                </a>
+                            <a
+                                href="{{ url_for('main.student_login') }}"
+                                class="btn btn-success btn-lg w-100 login-btn">
 
+                                🎓 Student Login
 
-                <!-- SEARCH STUDENT -->
+                            </a>
 
-                <a
-                    href="{{ url_for('student.search_student') }}"
-                    class="btn btn-outline-primary btn-lg w-100 mb-4">
-
-                    🔍 Search Student
-
-                </a>
+                        </div>
 
 
-                <hr>
+                        <div class="col-md-5">
+
+                            <a
+                                href="{{ url_for('main.admin_login') }}"
+                                class="btn btn-dark btn-lg w-100 login-btn">
+
+                                🔐 Admin Login
+
+                            </a>
+
+                        </div>
+
+                    </div>
 
 
-                <!-- ADMIN -->
+                    <!-- SEARCH -->
 
-                <p class="text-muted small mb-2">
-                    Administration
-                </p>
+                    <div class="mt-4">
 
-                <a
-                    href="{{ url_for('main.admin_login') }}"
-                    class="btn btn-dark">
+                        <a
+                            href="{{ url_for('student.search_student') }}"
+                            class="btn btn-outline-primary login-btn">
 
-                    🔐 Admin
+                            🔍 Search Student
 
-                </a>
+                        </a>
+
+                    </div>
+
+
+                    <!-- ADMIN INFORMATION -->
+
+                    <div class="admin-section">
+
+                        <p class="text-muted small mb-2">
+                            Administration Portal
+                        </p>
+
+                        <a
+                            href="{{ url_for('main.admin_login') }}"
+                            class="admin-link">
+
+                            Access Admin Dashboard →
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FEATURES -->
+
+                <div class="feature-section">
+
+                    <div class="row text-center">
+
+                        <div class="col-md-3">
+
+                            <div class="feature-box">
+
+                                <div class="feature-icon">
+                                    🖥️
+                                </div>
+
+                                <div class="feature-title">
+                                    Lab Management
+                                </div>
+
+                                <p class="feature-text">
+                                    Manage computer lab resources.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            <div class="feature-box">
+
+                                <div class="feature-icon">
+                                    🎓
+                                </div>
+
+                                <div class="feature-title">
+                                    Students
+                                </div>
+
+                                <p class="feature-text">
+                                    Manage student information.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            <div class="feature-box">
+
+                                <div class="feature-icon">
+                                    📋
+                                </div>
+
+                                <div class="feature-title">
+                                    Attendance
+                                </div>
+
+                                <p class="feature-text">
+                                    Track student attendance.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            <div class="feature-box">
+
+                                <div class="feature-icon">
+                                    📊
+                                </div>
+
+                                <div class="feature-title">
+                                    Dashboard
+                                </div>
+
+                                <p class="feature-text">
+                                    View management information.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
